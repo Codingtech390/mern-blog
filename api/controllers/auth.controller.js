@@ -68,3 +68,54 @@ export const signin = async (req, res, next) => {
     next(error);
   }
 };
+
+// Google Login
+
+export const google = async (req, res, next) => {
+  // Check if the user exists already. Sign in if the user already exists and create a new user if it doesn't exist
+
+  const { name, email, googlePhotoUrl } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (user) {
+      const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY);
+      const { password, ...rest } = user._doc;
+
+      res
+        .status(200)
+        .cookie("access_token", token, {
+          httpOnly: true,
+        })
+        .json(rest);
+    } else {
+      // If the user doesn't exist, create a new user with a random username and password
+      // Generate a random password and hash it
+      const generatedPassword =
+        Math.random().toString(36).slice(-8) + Math.random().toString(36).slice;
+
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+
+      // Create a new user based on the information and new password created above
+      const newUser = new User({
+        username:
+          name.toLowerCase().split(" ").join("") +
+          Math.random().toString(9).slice(-4),
+        email,
+        password: hashedPassword,
+        profilePicture: googlePhotoUrl,
+      });
+      // Save the newly created user and create a new token for it.
+      await newUser.save();
+      const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET_KEY);
+      const { password, ...rest } = newUser._doc;
+      res
+        .status(200)
+        .cookie("access_token", token, {
+          httpOnly: true,
+        })
+        .json(rest);
+    }
+  } catch (error) {
+    next(error);
+  }
+};
