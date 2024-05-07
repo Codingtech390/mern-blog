@@ -28,7 +28,7 @@ export default function DashboardProfile() {
   const [formData, setFormData] = useState({});
 
   const [updateUserSuccess, setUpdateUserSuccess] = useState(null);
-  const [updateUserError, setUpdateUserError] = useState(null);
+  const [updateUserError, setUpdateUserError] = useState(null); 
 
   const filePickerRef = useRef();
   const { currentUser } = useSelector((state) => state.user);
