@@ -36,35 +36,48 @@ export const updateUser = async (req, res, next) => {
       );
     }
   }
-    try {
-      const updatedUser = await User.findByIdAndUpdate(
-        req.params.userId,
-        {
-          $set: {
-            username: req.body.username,
-            email: req.body.email,
-            password: req.body.password,
-            profilePicture: req.body.profilePicture,
-          },
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.userId,
+      {
+        $set: {
+          username: req.body.username,
+          email: req.body.email,
+          password: req.body.password,
+          profilePicture: req.body.profilePicture,
         },
-        { new: true }
-      );
-      const { password, ...rest } = updatedUser._doc;
-      res.status(200).json(rest);
-    } catch (error) {
-      next(error);
-    }
+      },
+      { new: true }
+    );
+    const { password, ...rest } = updatedUser._doc;
+    res.status(200).json(rest);
+  } catch (error) {
+    next(error);
+  }
 };
 
 // Delete User
 export const deleteUser = async (req, res, next) => {
-  if(req.user.id !== req.params.userId){
+  if (req.user.id !== req.params.userId) {
     return next(errorHandler(403, "You are not allowed to delete this user"));
-  } 
-  try{
-    await User.findByIdAndDelete(req.params.userId)
+  }
+  try {
+    await User.findByIdAndDelete(req.params.userId);
     res.status(200).json({ message: "User has been deleted successfully" });
-  } catch(error){
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Sign out the user
+
+export const signout = (req, res, next) => {
+  try {
+    res
+      .clearCookie("access_token")
+      .status(200)
+      .json("User has been signed out");
+  } catch (error) {
     next(error);
   }
 };

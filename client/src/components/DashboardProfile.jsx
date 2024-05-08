@@ -8,6 +8,7 @@ import {
   deleteUserStart,
   deleteUserSuccess,
   deleteUserFailure,
+  signoutSuccess,
 } from "../redux/user/userSlice";
 import { useDispatch } from "react-redux";
 
@@ -137,18 +138,35 @@ export default function DashboardProfile() {
     setShowModal(false);
     try {
       dispatch(deleteUserStart());
-      const response = await fetch(`/api/user/delete/${currentUser._id}`,{
+      const response = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
       });
       const data = await response.json();
 
-      if(!response.ok){
+      if (!response.ok) {
         dispatch(deleteUserFailure(data.message));
       } else {
         dispatch(deleteUserSuccess(data));
       }
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
+    }
+  };
+
+  // Handle Signout
+
+  const handleSignout = async () => {
+    try {
+      const response = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      if(!response.ok){
+        console.log(data.message);
+      } else{
+        dispatch(signoutSuccess());
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -231,7 +249,9 @@ export default function DashboardProfile() {
         <span onClick={() => setShowModal(true)} className="cursor-pointer">
           Delete Account
         </span>
-        <span className="cursor-pointer">Sign Out</span>
+        <span onClick={handleSignout} className="cursor-pointer">
+          Sign Out
+        </span>
       </div>
 
       {updateUserSuccess && (
