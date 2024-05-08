@@ -1,5 +1,6 @@
 import { Alert, Button, Modal, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   updateStart,
@@ -39,7 +40,7 @@ export default function DashboardProfile() {
   const [showModal, setShowModal] = useState(false);
 
   const filePickerRef = useRef();
-  const { currentUser, error } = useSelector((state) => state.user);
+  const { currentUser, error, loading } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const handleImageChange = (e) => {
@@ -160,9 +161,9 @@ export default function DashboardProfile() {
       const response = await fetch("/api/user/signout", {
         method: "POST",
       });
-      if(!response.ok){
+      if (!response.ok) {
         console.log(data.message);
-      } else{
+      } else {
         dispatch(signoutSuccess());
       }
     } catch (error) {
@@ -241,9 +242,25 @@ export default function DashboardProfile() {
           placeholder="password"
           onChange={handleChange}
         />
-        <Button type="submit" gradientDuoTone="purpleToBlue" outline>
-          Update
+        <Button
+          type="submit"
+          gradientDuoTone="purpleToBlue"
+          outline
+          disabled={loading || imageFileUploading}
+        >
+          {loading ? "Loading..." : "Update"}
         </Button>
+        {currentUser.isAdmin && (
+          <Link to={"/create-post"}>
+            <Button
+              type="button"
+              gradientDuoTone="purpleToPink"
+              className="w-full"
+            >
+              Create a post
+            </Button>
+          </Link>
+        )}
       </form>
       <div className="text-red-500 flex justify-between mt-5">
         <span onClick={() => setShowModal(true)} className="cursor-pointer">
