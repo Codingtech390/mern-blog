@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Alert, Button, FileInput, Select, TextInput } from "flowbite-react";
 
 import ReactQuill from "react-quill";
@@ -20,9 +21,12 @@ export default function CreatePost() {
   const [imageUploadProgress, setImageUploadProgress] = useState(null);
   const [imageUploadError, setImageUploadError] = useState(null);
   const [formData, setFormData] = useState({});
+  const [publishError, setPublishError] = useState(null);
 
+  const navigate = useNavigate();
+
+  // Handle Upload Image Function
   const handleUploadImage = async () => {
-    console.log('Uploading image');
     try {
       if (!file) {
         setImageUploadError("Please select an image to upload");
@@ -55,7 +59,30 @@ export default function CreatePost() {
     } catch (error) {
       setImageUploadError("Image upload failed");
       setImageUploadProgress(null);
-      console.log(error);
+    }
+  };
+
+  // Handle Form Submit Function
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/post/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        setPublishError(data.message);
+        return;
+      }
+      if (response.ok) {
+        setPublishError(null);
+        navigate(`/post/${data.slug}`);
+      }
+    } catch (error) {
+      setPublishError("Oops.! Something went wrong");
     }
   };
 
@@ -64,7 +91,7 @@ export default function CreatePost() {
       <h1 className="text-center text-3xl my-2 font-semibold">
         Create a post{" "}
       </h1>
-      <form className="flex flex-col gap-2">
+      <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 sm:flex-row justify-between">
           <TextInput
             type="text"
@@ -72,8 +99,15 @@ export default function CreatePost() {
             required
             id="title"
             className="flex-1"
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
           />
-          <Select>
+          <Select
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
+          >
             <option value="uncategorized">Select a category</option>
             <option value="javascript">Javascript</option>
             <option value="reactjs">React.js</option>
@@ -108,7 +142,7 @@ export default function CreatePost() {
           </Button>
         </div>
 
-        { imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
+        {imageUploadError && <Alert color="failure">{imageUploadError}</Alert>}
         {formData.image && (
           <img
             src={formData.image}
@@ -117,17 +151,21 @@ export default function CreatePost() {
           />
         )}
 
-
-
         <ReactQuill
           theme="snow"
           placeholder="Write something..."
           className="h-72 mb-12"
           required
+          onChange={(value) => setFormData({ ...formData, content: value })}
         />
         <Button type="submit" gradientDuoTone="purpleToPink">
           Publish
         </Button>
+        {publishError && (
+          <Alert className="mt-5" color="failure">
+            {publishError}
+          </Alert>
+        )}
       </form>
     </div>
   );
