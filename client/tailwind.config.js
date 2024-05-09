@@ -5,11 +5,11 @@ export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
-    './pages/**/*.{html,js}',
+    "./pages/**/*.{html,js}",
     flowbite.content(),
   ],
   theme: {
     extend: {},
   },
-  plugins: [flowbite.plugin()],
-}
+  plugins: [flowbite.plugin(), require("tailwind-scrollbar")],
+};
