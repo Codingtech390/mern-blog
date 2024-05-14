@@ -65,11 +65,25 @@ export const getposts = async (req, res, next) => {
     const lastMonthPosts = await Post.countDocuments({
       createdAt: { $gte: oneMonthAgo },
     });
-    res.status(200).json({ 
-      posts, 
-      totalPosts, 
-      lastMonthPosts 
+    res.status(200).json({
+      posts,
+      totalPosts,
+      lastMonthPosts,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Delete post
+
+export const deletePost = async (req, res, next) => {
+  if (!req.user.isAdmin || req.user.id !== req.params.userId) {
+    return next(errorHandler(403, "You do not have permission to delete this post"));
+  }
+  try {
+    await Post.findByIdAndDelete(req.params.postId);
+    res.status(200).json({ message: "Post has been deleted successfully" });
   } catch (error) {
     next(error);
   }
