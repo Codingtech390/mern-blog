@@ -5,6 +5,7 @@ import DashboardProfile from "../components/DashboardProfile";
 import DashboardPosts from "../components/DashboardPosts";
 import DashboardUsers from "../components/DashboardUsers";
 import DashboardComments from "../components/DashboardComments";
+import DashboardComponents from "../components/DashboardComponents";
 export default function Dashboard() {
   const location = useLocation();
   const [tab, setTab] = useState("");
@@ -13,7 +14,7 @@ export default function Dashboard() {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get("tab");
 
-    if(tabFromUrl){
+    if (tabFromUrl) {
       setTab(tabFromUrl);
     }
   }, [location.search]);
@@ -21,17 +22,19 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
       <div className="md:w-56">
-        { /* Sidebar */}
+        {/* Sidebar */}
         <DashboardSidebar />
       </div>
       {/* Profile */}
-      {tab === 'profile' && <DashboardProfile />}
+      {tab === "profile" && <DashboardProfile />}
       {/* Posts */}
       {tab === "posts" && <DashboardPosts />}
       {/* Users */}
       {tab === "users" && <DashboardUsers />}
       {/* Comments */}
       {tab === "comments" && <DashboardComments />}
+      {/* Dashboard Components */}
+      {tab === "dashboard" && <DashboardComponents />}
     </div>
   );
 }
