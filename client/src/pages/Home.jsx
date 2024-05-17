@@ -14,7 +14,7 @@ export default function Home() {
     fetchPosts();
   }, []);
   return (
-    <div>
+    <div className="hero-div">
       <div className="flex flex-col gap-6 p-28 px-3 max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold lg:text-5xl">Welcome to my blog</h1>
         <p className="text-gray-500 text-xs sm:text-sm">
@@ -37,7 +37,7 @@ export default function Home() {
           View all
         </Link>
       </div>
-      <div className="p-3 bg-amber-100 dark:bg-slate-700">
+      <div className="p-5 bg-green-100 dark:bg-slate-700">
         <CallToAction />
       </div>
 
